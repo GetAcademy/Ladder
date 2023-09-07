@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #app {
+            display: grid;
+            grid-template-columns: repeat(9, 60px);
+            grid-template-rows: repeat(10, 60px);
+        }
+
+        #app>div {
+            border: 1px solid gray;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+    <script>
+        // model
+        let colors = [];
+        let playerSquareNo = 0;
+
+        // view
+        init();
+        function updateView() {
+            let squaresHtml = '';
+            let startValue = 90;
+            while (startValue > 0) {
+                squaresHtml +=
+                    createRowHtml(startValue, -1)
+                    + createRowHtml(startValue - 17, 1);
+                startValue -= 18;
+            }
+
+            document.getElementById('app').innerHTML = /*HTML*/`
+                ${squaresHtml}
+                <button onclick="move(1)">Flytt 1</button>
+                <button onclick="move(2)">Flytt 2</button>
+                <button onclick="move(3)">Flytt 3</button>
+                <button onclick="move(4)">Flytt 4</button>
+                <button onclick="move(5)">Flytt 5</button>
+                <button onclick="move(6)">Flytt 6</button>
+                <br/>
+                ${playerSquareNo == 0 ? 'Start ved å trille terning':''}
+            `;
+
+        }
+
+        function createRowHtml(startValue, change) {
+            return createSquareHtml(startValue + 0 * change)
+                + createSquareHtml(startValue + 1 * change)
+                + createSquareHtml(startValue + 2 * change)
+                + createSquareHtml(startValue + 3 * change)
+                + createSquareHtml(startValue + 4 * change)
+                + createSquareHtml(startValue + 5 * change)
+                + createSquareHtml(startValue + 6 * change)
+                + createSquareHtml(startValue + 7 * change)
+                + createSquareHtml(startValue + 8 * change)
+        }
+
+        function createSquareHtml(squareNo) {
+            let toSquareNo = getLadderFrom(squareNo);
+            let ladderText = toSquareNo == null ? '' : `<br/>=> ${toSquareNo}`;
+            let playerText = playerSquareNo == squareNo ? '<br/>X' : ''
+            return /*HTML*/`
+                <div style="background-color: ${colors[squareNo]}">
+                    ${squareNo}
+                    ${ladderText}
+                    ${playerText}                    
+                </div>
+                `;
+        }
+
+        // controller
+        function init() {
+            for (let squareNo = 1; squareNo <= 90; squareNo++) {
+                let toSquareNo = getLadderFrom(squareNo);
+                if (toSquareNo != null) {
+                    colors[squareNo] = toSquareNo > squareNo ? 'green' : 'red';
+                    colors[toSquareNo] = toSquareNo > squareNo ? 'lightgreen' : 'pink';
+                }
+            }
+            updateView();
+        }
+
+        function move(change) {
+            playerSquareNo += change;
+            let toSquareNo = getLadderFrom(playerSquareNo);
+            if (toSquareNo != null) playerSquareNo = toSquareNo;
+            updateView();
+        }
+
+
+        // diverse funksjoner
+        function getLadderFrom(squareNo) {
+            if (squareNo == 1) return 40;
+            if (squareNo == 33) return 3;
+            return null;
+        }
+
+    </script>
+</body>
+
+</html>
